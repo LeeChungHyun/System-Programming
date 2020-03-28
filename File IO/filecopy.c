@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
                 perror("setvbuf(fpout)");
                 return 5;
         }
-        while(n=fread(fbuf, sizeof(char), BUFFER_SIZE, fpin)>0)
+        while(n=fread(fbuf, sizeof(char), BUFFER_SIZE, fpin)){
                 fwrite(fbuf, sizeof(char),n,fpout);
-
+        }
         fclose(fpin);
         fclose(fpout);
         return 0;
