@@ -1,6 +1,5 @@
 # System-Programming
-
-[self study for system programming and computer architecture]
+Self study for system programming and computer architecture
 
 ```
 I made my own material while studying system programming on Windows
