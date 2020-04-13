@@ -1,5 +1,5 @@
 #include <direct.h>
-//unix에는 <unistd.h>
+//unix에는 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/wait.h>
