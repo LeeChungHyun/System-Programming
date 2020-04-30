@@ -98,6 +98,38 @@ void destroyQueue(){
     queLen = 0;
 }
 
+void* producer(void* arg){
+    input = open("inputfile.txt",0);
+    while((n=read(input,buf,1))!=0){
+        if(buf[0] == '\n')
+            buf[0] = '*';
+        pthread_mutex_lock(&mutex);
+        if(isFull())
+            pthread_cond_wait(&buffer_has_space, &mutex);
+        Enqueue(buf[0]);
+        pthread_cond_signal(&buffer_has_data);
+        pthread_mutex_unlock(&mutex);
+    }
+    close(input);
+}
+
+void* consumer(void* arg)
+{
+    char data;
+    while (1)
+    {
+        pthread_mutex_lock(&mutex);
+        if (isEmpty())
+            pthread_cond_wait(&buffer_has_space, &mutex);
+        Dequeue(&data);
+        pthread_cond_signal(&buffer_has_data);
+        pthread_mutex_unlock(&mutex);
+        if(data == '*')
+            break;
+        printf("data = %c\n", data);
+    }
+}
+
 int main(){
     int i;
     pthread_t threads[2];
