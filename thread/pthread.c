@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define MaxQueue 100//큐의 최댓값 지정한다.
+#define MaxQueue 100//큐의 최댓값 지정
 
 //사용할 뮤텍스와 condition 선언하고 초기화한다.
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
