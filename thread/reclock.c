@@ -77,7 +77,6 @@ int main(){
                 pos = record_no * sizeof(struct record);
                 lseek(fd, pos, SEEK_SET);
                 break;
-      case 't' :
       case 'q' :
                 quit = TRUE;
                 break;
