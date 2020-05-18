@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define M_SIZE 1000
 #define REG_SIZE 32
-#include "stdio.h"
+#include <stdio.h>
 #include <math.h>
 #include <string.h>
 
@@ -36,7 +36,7 @@ union itype {
 void openBinaryFile(char* filePath);
 unsigned int To_BigEndian(unsigned int x);
 unsigned char getOp(int opc);
-// binary to decimal ÇÑ °ªÀ» int°ªÀ¸·Î ÀúÀåÇÔ
+// binary to decimal í•œ ê°’ì„ intê°’ìœ¼ë¡œ ì €ìž¥í•¨
 unsigned char* getInstName(int opc, int fct, int* isImmediate);
 void instExecute(int opc, int fct, int* isImmediate);
 
@@ -69,8 +69,8 @@ int MEM(unsigned int A, int V, int nRW, int S) {
 	else {
 
 		printf("No memory\n");
-		// ¿¡·¯ ÄÉÀÌ½º Å×½ºÆ®¸¦ À§ÇØ ÀüÃ¼ ÇÁ·Î±×·¥À» Á¾·áÇÏÁö ¾Ê°í
-		// ÇÔ¼ö¸¸ Á¾·áÇÑ´Ù
+		// ì—ëŸ¬ ì¼€ì´ìŠ¤ í…ŒìŠ¤íŠ¸ë¥¼ ìœ„í•´ ì „ì²´ í”„ë¡œê·¸ëž¨ì„ ì¢…ë£Œí•˜ì§€ ì•Šê³ 
+		// í•¨ìˆ˜ë§Œ ì¢…ë£Œí•œë‹¤
 		return;
 	}
 
@@ -163,25 +163,25 @@ int main()
 	int lenCode = 0;
 	// Initialize
 	initializeRegister();
-	// General ¸ðµå ¿Í Debug ¸ðµå ±¸ºÐ
+	// General ëª¨ë“œ ì™€ Debug ëª¨ë“œ êµ¬ë¶„
 	while(1){
 		lenCode = 0;
 		printf("Type Command : ");
 		gets(cmdLine);
 
-		// °ø¹é ¹®ÀÚ¸¦ ±âÁØÀ¸·Î ¹®ÀÚ¿­À» ÀÚ¸£°í Æ÷ÀÎÅÍ ¹ÝÈ¯
+		// ê³µë°± ë¬¸ìžë¥¼ ê¸°ì¤€ìœ¼ë¡œ ë¬¸ìžì—´ì„ ìžë¥´ê³  í¬ì¸í„° ë°˜í™˜
 		char *ptr = strtok(cmdLine, " ");
-		// ¸í·É¾î ÄÚµå
+		// ëª…ë ¹ì–´ ì½”ë“œ
 		char *cmdCode = ptr;
 		if (ptr != NULL) {
-			// ¸í·É¾î ÄÚµå ±ÛÀÚ ¼ö
+			// ëª…ë ¹ì–´ ì½”ë“œ ê¸€ìž ìˆ˜
 			lenCode = strlen(cmdCode);
 		}
 		if(lenCode == 1){
 			switch (*cmdCode) {
 			case 'l':
 				// load program
-				// ptrÀº Filename ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+				// ptrì€ Filename ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 				ptr = strtok(NULL, " ");
 				char *filePath = NULL;
 				if (ptr == NULL) {
@@ -195,7 +195,7 @@ int main()
 				break;
 			case 'j':
 				// jump
-				// ptrÀº ÇÁ·Î±×·¥ ½ÃÀÛ À§Ä¡ ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+				// ptrì€ í”„ë¡œê·¸ëž¨ ì‹œìž‘ ìœ„ì¹˜ ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 				ptr = strtok(NULL, " ");
 				char *newAddr = NULL;
 				if (ptr == NULL) {
@@ -228,7 +228,7 @@ int main()
 				break; }
 			case 'm':
 				// View memory
-				// ptrÀº start ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+				// ptrì€ start ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 				ptr = strtok(NULL, " ");
 
 				if (ptr == NULL) {
@@ -238,7 +238,7 @@ int main()
 				else {
 					char *start = ptr;
 
-					// ptrÀº end ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+					// ptrì€ end ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 					ptr = strtok(NULL, " ");
 					if (ptr == NULL) {
 						printf("Error: Not enough arguments.\n");
@@ -271,10 +271,10 @@ int main()
 		}
 		else if(lenCode == 2){
 			if (strcmp(cmdCode, "sr") == 0) {
-				// Æ¯Á¤ ·¹Áö½ºÅÍÀÇ °ª ¼³Á¤
+				// íŠ¹ì • ë ˆì§€ìŠ¤í„°ì˜ ê°’ ì„¤ì •
 				char *regNum = NULL;
 				char *regVal = NULL;
-				// ptrÀº register number ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+				// ptrì€ register number ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 				ptr = strtok(NULL, " ");
 
 				if (ptr == NULL) {
@@ -283,7 +283,7 @@ int main()
 				}
 				else {
 					regNum = ptr;
-					// ptrÀº value ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+					// ptrì€ value ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 					ptr = strtok(NULL, " ");
 					if (ptr == NULL) {
 						printf("Error: Not enough arguments.\n");
@@ -296,8 +296,8 @@ int main()
 				}
 			}
 			else if (strcmp(cmdCode, "sm") == 0) {
-				// ¸Þ¸ð¸® Æ¯Á¤ ÁÖ¼ÒÀÇ °ª ¼³Á¤
-				// ptrÀº start ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+				// ë©”ëª¨ë¦¬ íŠ¹ì • ì£¼ì†Œì˜ ê°’ ì„¤ì •
+				// ptrì€ start ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 				ptr = strtok(NULL, " ");
 
 				if (ptr == NULL) {
@@ -308,7 +308,7 @@ int main()
 					printf("OK\n");
 					char *memLoc = ptr;
 
-					// ptrÀº end ¹®ÀÚ¿­À» °¡¸®Å²´Ù.
+					// ptrì€ end ë¬¸ìžì—´ì„ ê°€ë¦¬í‚¨ë‹¤.
 					ptr = strtok(NULL, " ");
 					if (ptr == NULL) {
 						printf("Error: Not enough arguments.\n");
@@ -332,7 +332,7 @@ int main()
 }
 
 void openBinaryFile(char* filePath) {
-	// ¹ÙÀÌ³Ê¸® ÆÄÀÏ ¿­±â
+	// ë°”ì´ë„ˆë¦¬ íŒŒì¼ ì—´ê¸°
 	//err = fopen_s(&pFile, "as_ex01_arith.bin", "rb");
 	//err = fopen_s(&pFile, "as_ex02_logic.bin", "rb");
 	//err = fopen_s(&pFile, "as_ex03_ifelse.bin", "rb");
@@ -354,7 +354,7 @@ void openBinaryFile(char* filePath) {
 	fopen_s(&pFile, filePath, "rb");
 	printf("The Binary File Has Been Loaded Successfully.\n");
 
-	// Load Init Task (¸Þ¸ð¸® ÀûÀç)
+	// Load Init Task (ë©”ëª¨ë¦¬ ì ìž¬)
 	loadInitTask();
 }
 
@@ -363,32 +363,32 @@ void startStepTask() {
 	unsigned instBinary = MEM(PC, NULL, 0, 2);
 	PC = PC + 4;
 	/* Instruction Decode */
-	// ¸í·É¾î Å¸ÀÔ(R, I, J) Ã¼Å© ¹×
-	// ¸í·É¾î type¿¡ µû¶ó ºÐ±âÇÏ¿© ÃßÃâ
+	// ëª…ë ¹ì–´ íƒ€ìž…(R, I, J) ì²´í¬ ë°
+	// ëª…ë ¹ì–´ typeì— ë”°ë¼ ë¶„ê¸°í•˜ì—¬ ì¶”ì¶œ
 	switch (getOp((instBinary >> 26) & 0x3F))
 	{
 	case 'R':
-		// R-Format ±âÁØ, opcode ÃßÃâ
+		// R-Format ê¸°ì¤€, opcode ì¶”ì¶œ
 		IR.RI.opcode = (instBinary >> 26) & 0x3F;
-		// rs ÃßÃâ
+		// rs ì¶”ì¶œ
 		IR.RI.rs = (instBinary >> 21) & 0x1F;
-		// rt ÃßÃâ
+		// rt ì¶”ì¶œ
 		IR.RI.rt = (instBinary >> 16) & 0x1F;
-		// rd ÃßÃâ
+		// rd ì¶”ì¶œ
 		IR.RI.rd = (instBinary >> 11) & 0x1F;
-		// funct ÃßÃâ
+		// funct ì¶”ì¶œ
 		IR.RI.funct = instBinary & 0x3F;
 
 		instExecute(IR.RI.opcode, IR.RI.funct, NULL);
 
-		// ¸í·É¾î ±¸ºÐ¿¡ µû¸¥ °á°ú Ãâ·Â º¯È­
+		// ëª…ë ¹ì–´ êµ¬ë¶„ì— ë”°ë¥¸ ê²°ê³¼ ì¶œë ¥ ë³€í™”
 		if (IR.RI.opcode == 0 && IR.RI.funct == 12) {
-			// syscall ¸í·É¾î case
+			// syscall ëª…ë ¹ì–´ case
 			printf("%s\n\n", getInstName(IR.RI.opcode, IR.RI.funct, NULL));
 			continueTask = 0;
 		}
 		else if (IR.RI.opcode == 0 && IR.RI.funct == 8) {
-			// jr ¸í·É¾î case
+			// jr ëª…ë ¹ì–´ case
 			printf("%s %s\n\n", getInstName(IR.RI.opcode, IR.RI.funct, NULL), regArr[IR.RI.rs]);
 		}
 		else {
@@ -396,19 +396,19 @@ void startStepTask() {
 		}
 		break;
 	case 'I':
-		// I-Format ±âÁØ, opcode ÃßÃâ
+		// I-Format ê¸°ì¤€, opcode ì¶”ì¶œ
 		IR.II.opcode = (instBinary >> 26) & 0x3F;
-		int isImmediate = 0; // immediate °ªÀÌ¸é 1·Î ¹Ù²Þ
-		// rs ÃßÃâ
+		int isImmediate = 0; // immediate ê°’ì´ë©´ 1ë¡œ ë°”ê¿ˆ
+		// rs ì¶”ì¶œ
 		IR.II.rs = (instBinary >> 21) & 0x1F;
-		// rt ÃßÃâ
+		// rt ì¶”ì¶œ
 		IR.II.rt = (instBinary >> 16) & 0x1F;
-		// offset/immediate value ÃßÃâ
+		// offset/immediate value ì¶”ì¶œ
 		IR.II.offset = instBinary & 0xFFFF;
 
 		instExecute(IR.II.opcode, NULL, &isImmediate);
 
-		// offsetÀÎÁö immediate value ÀÎÁö¿¡ µû¸¥ °á°ú Ãâ·Â º¯È­
+		// offsetì¸ì§€ immediate value ì¸ì§€ì— ë”°ë¥¸ ê²°ê³¼ ì¶œë ¥ ë³€í™”
 		printf("%s", getInstName(IR.II.opcode, NULL, &isImmediate));
 		if (isImmediate == 1) {
 			printf(" %s %s %d\n\n", regArr[IR.II.rt], regArr[IR.II.rs], IR.II.offset);
@@ -418,14 +418,14 @@ void startStepTask() {
 		}
 		break;
 	case 'J':
-		// J-Format ±âÁØ, opcode ÃßÃâ
+		// J-Format ê¸°ì¤€, opcode ì¶”ì¶œ
 		IR.JI.opcode = (instBinary >> 26) & 0x3F;
-		// jump target address ÃßÃâ
+		// jump target address ì¶”ì¶œ
 		IR.JI.jumpAddr = instBinary & 0x3FFFFFF;
 
 		instExecute(IR.JI.opcode, NULL, NULL);
 
-		// °á°ú Ãâ·Â
+		// ê²°ê³¼ ì¶œë ¥
 		printf("%s %d\n\n", getInstName(IR.JI.opcode, NULL, NULL), IR.JI.jumpAddr);
 		break;
 	default:
@@ -440,33 +440,33 @@ void startGoTask() {
 		unsigned instBinary = MEM(PC, NULL, 0, 2);
 		PC = PC + 4;
 		/* Instruction Decode */
-		// ¸í·É¾î Å¸ÀÔ(R, I, J) Ã¼Å© ¹×
-		// ¸í·É¾î type¿¡ µû¶ó ºÐ±âÇÏ¿© ÃßÃâ
+		// ëª…ë ¹ì–´ íƒ€ìž…(R, I, J) ì²´í¬ ë°
+		// ëª…ë ¹ì–´ typeì— ë”°ë¼ ë¶„ê¸°í•˜ì—¬ ì¶”ì¶œ
 		switch (getOp((instBinary >> 26) & 0x3F))
 		{
 		case 'R':
-			// R-Format ±âÁØ, opcode ÃßÃâ
+			// R-Format ê¸°ì¤€, opcode ì¶”ì¶œ
 			IR.RI.opcode = (instBinary >> 26) & 0x3F;
-			// rs ÃßÃâ
+			// rs ì¶”ì¶œ
 			IR.RI.rs = (instBinary >> 21) & 0x1F;
-			// rt ÃßÃâ
+			// rt ì¶”ì¶œ
 			IR.RI.rt = (instBinary >> 16) & 0x1F;
-			// rd ÃßÃâ
+			// rd ì¶”ì¶œ
 			IR.RI.rd = (instBinary >> 11) & 0x1F;
-			// funct ÃßÃâ
+			// funct ì¶”ì¶œ
 			IR.RI.funct = instBinary & 0x3F;
 
 			instExecute(IR.RI.opcode, IR.RI.funct, NULL);
 
 			/*
-			// ¸í·É¾î ±¸ºÐ¿¡ µû¸¥ °á°ú Ãâ·Â º¯È­ (For Debugging)
+			// ëª…ë ¹ì–´ êµ¬ë¶„ì— ë”°ë¥¸ ê²°ê³¼ ì¶œë ¥ ë³€í™” (For Debugging)
 			if (IR.RI.opcode == 0 && IR.RI.funct == 12) {
-				// syscall ¸í·É¾î case
+				// syscall ëª…ë ¹ì–´ case
 				printf("%s\n\n", getInstName(IR.RI.opcode, IR.RI.funct, NULL));
 				continueTask = 0;
 			}
 			else if (IR.RI.opcode == 0 && IR.RI.funct == 8) {
-				// jr ¸í·É¾î case
+				// jr ëª…ë ¹ì–´ case
 				printf("%s %s\n\n", getInstName(IR.RI.opcode, IR.RI.funct, NULL), regArr[IR.RI.rs]);
 			}
 			else {
@@ -475,20 +475,20 @@ void startGoTask() {
 			*/
 			break;
 		case 'I':
-			// I-Format ±âÁØ, opcode ÃßÃâ
+			// I-Format ê¸°ì¤€, opcode ì¶”ì¶œ
 			IR.II.opcode = (instBinary >> 26) & 0x3F;
-			int isImmediate = 0; // immediate °ªÀÌ¸é 1·Î ¹Ù²Þ
-			// rs ÃßÃâ
+			int isImmediate = 0; // immediate ê°’ì´ë©´ 1ë¡œ ë°”ê¿ˆ
+			// rs ì¶”ì¶œ
 			IR.II.rs = (instBinary >> 21) & 0x1F;
-			// rt ÃßÃâ
+			// rt ì¶”ì¶œ
 			IR.II.rt = (instBinary >> 16) & 0x1F;
-			// offset/immediate value ÃßÃâ
+			// offset/immediate value ì¶”ì¶œ
 			IR.II.offset = instBinary & 0xFFFF;
 
 			instExecute(IR.II.opcode, NULL, &isImmediate);
 
 			/*
-			// offsetÀÎÁö immediate value ÀÎÁö¿¡ µû¸¥ °á°ú Ãâ·Â º¯È­ (For Debugging)
+			// offsetì¸ì§€ immediate value ì¸ì§€ì— ë”°ë¥¸ ê²°ê³¼ ì¶œë ¥ ë³€í™” (For Debugging)
 			printf("%s", getInstName(IR.II.opcode, NULL, &isImmediate));
 			if (isImmediate == 1) {
 				printf(" %s %s %d\n\n", regArr[IR.II.rt], regArr[IR.II.rs], IR.II.offset);
@@ -499,15 +499,15 @@ void startGoTask() {
 			*/
 			break;
 		case 'J':
-			// J-Format ±âÁØ, opcode ÃßÃâ
+			// J-Format ê¸°ì¤€, opcode ì¶”ì¶œ
 			IR.JI.opcode = (instBinary >> 26) & 0x3F;
-			// jump target address ÃßÃâ
+			// jump target address ì¶”ì¶œ
 			IR.JI.jumpAddr = instBinary & 0x3FFFFFF;
 
 			instExecute(IR.JI.opcode, NULL, NULL);
 
 			/*
-			// °á°ú Ãâ·Â (For Debugging)
+			// ê²°ê³¼ ì¶œë ¥ (For Debugging)
 			printf("%s %d\n\n", getInstName(IR.JI.opcode, NULL, NULL), IR.JI.jumpAddr);
 			*/
 			break;
@@ -518,7 +518,7 @@ void startGoTask() {
 }
 
 void showRegister() {
-	// 16Áø¼ö·Î Ãâ·Â
+	// 16ì§„ìˆ˜ë¡œ ì¶œë ¥
 	printf("[REGISTER]\n");
 	for (int i = 0; i < REG_SIZE; i++) {
 		printf("$%d=\t0x%x\n", i, R[i]);
@@ -531,9 +531,9 @@ void initializeRegister() {
 		// 32bit
 		R[i] = 0x00000000;
 	}
-	// PC ÃÊ±â°ª ¼³Á¤
+	// PC ì´ˆê¸°ê°’ ì„¤ì •
 	PC = 0x00400000;
-	// SP ÃÊ±â°ª ¼³Á¤
+	// SP ì´ˆê¸°ê°’ ì„¤ì •
 	R[29] = 0x80000000;
 }
 
@@ -577,7 +577,7 @@ void loadInitTask() {
 	for (int i = 0; i < numInst; i++) {
 		if (fread(&data, sizeof(data1), 1, pFile) != 1)
 			exit(1);
-		// ¸í·É¾î ¸Þ¸ð¸® ÀûÀç
+		// ëª…ë ¹ì–´ ë©”ëª¨ë¦¬ ì ìž¬
 		data = To_BigEndian(data);
 		//printf("Instruction = %08x\n", data);
 
@@ -589,7 +589,7 @@ void loadInitTask() {
 		if (fread(&data, sizeof(data1), 1, pFile) != 1)
 			exit(1);
 		data = To_BigEndian(data);
-		// µ¥ÀÌÅÍ ¸Þ¸ð¸® ÀûÀç
+		// ë°ì´í„° ë©”ëª¨ë¦¬ ì ìž¬
 		//printf("Data = %08x\n", data);
 		
 		MEM(dataAddr, data, 1, 2);
@@ -627,7 +627,7 @@ unsigned char getOp(int opc) {
 
 void instExecute(int opc, int fct, int* isImmediate) {
 	if (opc != 0) {
-		// I-Format ¶Ç´Â J-Format ÀÎ °æ¿ì
+		// I-Format ë˜ëŠ” J-Format ì¸ ê²½ìš°
 		switch (opc) {
 		case 1: {
 			// bltz
@@ -722,7 +722,7 @@ void instExecute(int opc, int fct, int* isImmediate) {
 		}
 	}
 	else {
-		// R-Format ÀÎ °æ¿ì
+		// R-Format ì¸ ê²½ìš°
 		switch (fct) {
 		case 0: {
 			// sll
@@ -800,7 +800,7 @@ void instExecute(int opc, int fct, int* isImmediate) {
 
 unsigned char* getInstName(int opc, int fct, int* isImmediate) {
 	if (opc != 0) {
-		// I-Format ¶Ç´Â J-Format ÀÎ °æ¿ì
+		// I-Format ë˜ëŠ” J-Format ì¸ ê²½ìš°
 		switch (opc) {
 		case 1:
 			return "bltz";
@@ -847,7 +847,7 @@ unsigned char* getInstName(int opc, int fct, int* isImmediate) {
 		}
 	}
 	else {
-		// R-Format ÀÎ °æ¿ì
+		// R-Format ì¸ ê²½ìš°
 		switch (fct) {
 		case 0:
 			return "sll";
@@ -933,7 +933,7 @@ int shiftOperation(int V, int Y, int C) {
 		exit(1);
 	}
 	if (C == 0) {
-		// No shift : ±×´ë·Î ¹ÝÈ¯
+		// No shift : ê·¸ëŒ€ë¡œ ë°˜í™˜
 		ret = V;
 	}
 	else if (C == 1) {
@@ -951,8 +951,8 @@ int shiftOperation(int V, int Y, int C) {
 	return ret;
 }
 
-// ÀÌÇÔ¼ö´Â add ¶Ç´Â subtract ¼öÇà ½Ã¸¸
-// »ç¿ëÇÏ¿© Z°ªÀ» ¼³Á¤ÇÑ´Ù.
+// ì´í•¨ìˆ˜ëŠ” add ë˜ëŠ” subtract ìˆ˜í–‰ ì‹œë§Œ
+// ì‚¬ìš©í•˜ì—¬ Zê°’ì„ ì„¤ì •í•œë‹¤.
 int checkZero(int S) {
 	int ret = 0;
 	// check if S is zero,
