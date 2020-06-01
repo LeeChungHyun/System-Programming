@@ -2,16 +2,20 @@
 #define M_SIZE 1000
 #define REG_SIZE 32
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 
 const int check = 1;
 
-static FILE *pFile = NULL;
+static FILE* pFile = NULL;
 static errno_t err;
 static int continueTask = 1;
 
-
+/*각 format에 따른 구조체 형식이다. 강의자료 참고함.
+RI = r-format 구조체
+II = i-format 구조체
+JI = j-format 구조체*/
 union itype {
 	unsigned int I;
 	struct rFormat {
@@ -46,7 +50,7 @@ int addSubtract(int X, int Y, int C);
 int shiftOperation(int V, int Y, int C);
 int checkZero(int S);
 int checkSetLess(int X, int Y);
-int ALU(int X, int Y, int C, int *Z);
+int ALU(int X, int Y, int C, int* Z);
 
 static unsigned char progMEM[0x100000], dataMEM[0x100000], stakMEM[0x100000];
 
@@ -57,9 +61,10 @@ char* regArr[32] = { "$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3",
 					"$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7",
 					"$t8","$t9","$k0","$k1","$gp","$sp","$s8","$ra" };
 
+//Memory Access 부분이다.
 int MEM(unsigned int A, int V, int nRW, int S) {
 	unsigned int sel, offset;
-	unsigned char *pM;
+	unsigned char* pM;
 	sel = A >> 20;
 	offset = A & 0xFFFFF;
 
@@ -90,7 +95,7 @@ int MEM(unsigned int A, int V, int nRW, int S) {
 			//exit(1);
 		}
 	}
-	else if(S == 1) {
+	else if (S == 1) {
 		// Half word
 		if (offset % 2 != 0)	// Half-word-aligned Check
 		{
@@ -106,7 +111,7 @@ int MEM(unsigned int A, int V, int nRW, int S) {
 		else if (nRW == 1) {
 			// Write
 			pM[offset] = (V >> 8) & 0xFF;
-			pM[offset+1] = V & 0xFF;
+			pM[offset + 1] = V & 0xFF;
 		}
 		else {
 			printf("nRW input error\n");
@@ -124,15 +129,15 @@ int MEM(unsigned int A, int V, int nRW, int S) {
 		}
 		if (nRW == 0) {
 			// Read
-			int result = (pM[offset] << 24) + (pM[offset+1] << 16) + (pM[offset+2] << 8) + (pM[offset+3]);
+			int result = (pM[offset] << 24) + (pM[offset + 1] << 16) + (pM[offset + 2] << 8) + (pM[offset + 3]);
 			return result;
 		}
 		else if (nRW == 1) {
 			// Write
 			pM[offset] = (V >> 24) & 0xFF;
-			pM[offset+1] = (V >> 16) & 0xFF;
-			pM[offset+2] = (V >> 8) & 0xFF;
-			pM[offset+3] = V & 0xFF;
+			pM[offset + 1] = (V >> 16) & 0xFF;
+			pM[offset + 2] = (V >> 8) & 0xFF;
+			pM[offset + 3] = V & 0xFF;
 		}
 		else {
 			printf("nRW input error\n");
@@ -140,50 +145,53 @@ int MEM(unsigned int A, int V, int nRW, int S) {
 			//exit(1)
 		}
 	}
-	else {
+	else {//S가 유효하지 않은 값일 경우 오류처리
 		printf("Size input error\n");
 		return;
 		//exit(1)
 	}
 }
 
-void showRegister();
-void initializeRegister();
-void setRegister(unsigned int regNum, unsigned int val);
-void setMemory(char* offset, char* val);
 
-void updatePC(unsigned int addr);
-void loadInitTask();
-void startGoTask();
-void startStepTask();
+void initializeRegister();//레지스터 초기화
+void setRegister(unsigned int regNum, unsigned int val);//원하는 레지스터 값을 변경할 수 있는 함수.
+void setMemory(char* offset, char* val);//원하는 값으로 해당 메모리에 접근하여 값을 변경하는 함수.
+
+void updatePC(unsigned int addr);//현재 pc값을 원하는 값으로 변경하는 함수이다.
+void loadInitTask();//바이너리 파일을 로드하고 메모리에  적재하는 작업을 담당하는 함수.
+void showRegister();//인터페이스 'r'실행시 반환되는 함수
+void startGoTask();//인터페이스 'g'실행시 반환되는 함수
+void startStepTask();//인터페이스 's'실행시 반환되는 함수
 
 int main()
+/*위 소스코드는 simulator 인터페이스 만드는 내용이다.
+simulator명령은 I/j/g/s/m/r/x/sr/sm으로 구성된다.*/
 {
 	char cmdLine[50];
 	int lenCode = 0;
 	// Initialize
 	initializeRegister();
 	// General 모드 와 Debug 모드 구분
-	while(1){
+	while (1) {
 		lenCode = 0;
 		printf("Type Command : ");
 		gets(cmdLine);
 
 		// 공백 문자를 기준으로 문자열을 자르고 포인터 반환
-		char *ptr = strtok(cmdLine, " ");
+		char* ptr = strtok(cmdLine, " ");
 		// 명령어 코드
-		char *cmdCode = ptr;
+		char* cmdCode = ptr;
 		if (ptr != NULL) {
 			// 명령어 코드 글자 수
 			lenCode = strlen(cmdCode);
 		}
-		if(lenCode == 1){
+		if (lenCode == 1) {
 			switch (*cmdCode) {
 			case 'l':
 				// load program
 				// ptr은 Filename 문자열을 가리킨다.
 				ptr = strtok(NULL, " ");
-				char *filePath = NULL;
+				char* filePath = NULL;
 				if (ptr == NULL) {
 					printf("Error: Not enough arguments.\n");
 					printf("ex) l C:\\pub\\as_ex01_arith.bin\n");
@@ -194,10 +202,10 @@ int main()
 				}
 				break;
 			case 'j':
-				// jump
+				// jump, 입력한 위치에서 simulator 실행을 준비한다.
 				// ptr은 프로그램 시작 위치 문자열을 가리킨다.
 				ptr = strtok(NULL, " ");
-				char *newAddr = NULL;
+				char* newAddr = NULL;
 				if (ptr == NULL) {
 					printf("Error: Not enough arguments.\n");
 					printf("ex) j 0x40000000\n");
@@ -208,7 +216,8 @@ int main()
 				}
 				break;
 			case 'g':
-				// Go program
+				/*Go program, 현재PC위치에서 simulator가 명령어를 끝까지 처리한다.
+				이때 사용되는 함수는 startGoTask()이다.*/
 				if (pFile != NULL) {
 					startGoTask();
 				}
@@ -216,8 +225,9 @@ int main()
 					printf("Error: Load Binary File in advance!\n");
 				}
 				break;
-			case 's':{
-				// Step
+			case 's': {
+				/* Step, 명령어에 의하여 변경된 레지스터, 메모리 정보를 출력한다.
+				이때 사용되는 함수는 startStepTask()이다.*/
 				if (pFile != NULL) {
 					startStepTask();
 					showRegister();
@@ -228,7 +238,7 @@ int main()
 				break; }
 			case 'm':
 				// View memory
-				// ptr은 start 문자열을 가리킨다.
+				// ptr은 start 문자열을 가리킨다., startAddr~endAddr범위의 메모리 내용 출력
 				ptr = strtok(NULL, " ");
 
 				if (ptr == NULL) {
@@ -236,7 +246,7 @@ int main()
 					printf("ex) m 0x10000000 0x1000FFFF\n");
 				}
 				else {
-					char *start = ptr;
+					char* start = ptr;
 
 					// ptr은 end 문자열을 가리킨다.
 					ptr = strtok(NULL, " ");
@@ -245,8 +255,8 @@ int main()
 						printf("ex) m 0x10000000 0x1000FFFF\n");
 					}
 					else {
-						char *end = ptr;
-						
+						char* end = ptr;
+
 						unsigned int startAddr = strtol(start, NULL, 16);
 						unsigned int endAddr = strtol(end, NULL, 16);
 
@@ -257,11 +267,12 @@ int main()
 				}
 				break;
 			case 'r':
-				// View register
+				/* View register, 현재 레지스터 내용 출력
+				이때 사용되는 함수는 showRegister()이다.*/
 				showRegister();
 				break;
 			case 'x':
-				// Program exit
+				// Program exit, 종료
 				exit(1);
 				break;
 			default:
@@ -269,11 +280,11 @@ int main()
 				break;
 			}
 		}
-		else if(lenCode == 2){
+		else if (lenCode == 2) {
 			if (strcmp(cmdCode, "sr") == 0) {
 				// 특정 레지스터의 값 설정
-				char *regNum = NULL;
-				char *regVal = NULL;
+				char* regNum = NULL;
+				char* regVal = NULL;
 				// ptr은 register number 문자열을 가리킨다.
 				ptr = strtok(NULL, " ");
 
@@ -306,7 +317,7 @@ int main()
 				}
 				else {
 					printf("OK\n");
-					char *memLoc = ptr;
+					char* memLoc = ptr;
 
 					// ptr은 end 문자열을 가리킨다.
 					ptr = strtok(NULL, " ");
@@ -316,7 +327,7 @@ int main()
 					}
 					else {
 						printf("OK\n");
-						char *memVal = ptr;
+						char* memVal = ptr;
 					}
 				}
 			}
@@ -331,15 +342,15 @@ int main()
 	return 0;
 }
 
+// 바이너리 파일 여는 함수
 void openBinaryFile(char* filePath) {
-	// 바이너리 파일 열기
-	//err = fopen_s(&pFile, "as_ex01_arith.bin", "rb");
+	err = fopen_s(&pFile, "as_ex01_arith.bin", "rb");
 	//err = fopen_s(&pFile, "as_ex02_logic.bin", "rb");
 	//err = fopen_s(&pFile, "as_ex03_ifelse.bin", "rb");
-	
+
 	// File Validation TEST
-	FILE *testFile = NULL;
-	err = fopen_s(&testFile, filePath, "rb"); 
+	FILE* testFile = NULL;
+	err = fopen_s(&testFile, filePath, "rb");
 	if (err) {
 		printf("Cannot open file\n");
 		return 1;
@@ -358,6 +369,7 @@ void openBinaryFile(char* filePath) {
 	loadInitTask();
 }
 
+//인터페이스 's'실행시 반환되는 함수
 void startStepTask() {
 	//printf("current value : %x\n", MEM(PC, NULL, 0, 2));
 	unsigned instBinary = MEM(PC, NULL, 0, 2);
@@ -432,8 +444,10 @@ void startStepTask() {
 		break;
 	}
 }
+
+//인터페이스 'g'실행시 반환되는 함수
 void startGoTask() {
-	
+
 	while (continueTask) {
 		/* Instruction Fetch */
 		//printf("current value : %x\n", MEM(PC, NULL, 0, 2));
@@ -458,7 +472,7 @@ void startGoTask() {
 
 			instExecute(IR.RI.opcode, IR.RI.funct, NULL);
 
-			/*
+			
 			// 명령어 구분에 따른 결과 출력 변화 (For Debugging)
 			if (IR.RI.opcode == 0 && IR.RI.funct == 12) {
 				// syscall 명령어 case
@@ -472,7 +486,7 @@ void startGoTask() {
 			else {
 				printf("%s %s %s %s\n\n", getInstName(IR.RI.opcode, IR.RI.funct, NULL), regArr[IR.RI.rd], regArr[IR.RI.rs], regArr[IR.RI.rt]);
 			}
-			*/
+			
 			break;
 		case 'I':
 			// I-Format 기준, opcode 추출
@@ -487,7 +501,7 @@ void startGoTask() {
 
 			instExecute(IR.II.opcode, NULL, &isImmediate);
 
-			/*
+			
 			// offset인지 immediate value 인지에 따른 결과 출력 변화 (For Debugging)
 			printf("%s", getInstName(IR.II.opcode, NULL, &isImmediate));
 			if (isImmediate == 1) {
@@ -496,7 +510,7 @@ void startGoTask() {
 			else {
 				printf(" %s %d(%s)\n\n", regArr[IR.II.rt], IR.II.offset, regArr[IR.II.rs]);
 			}
-			*/
+			
 			break;
 		case 'J':
 			// J-Format 기준, opcode 추출
@@ -506,10 +520,10 @@ void startGoTask() {
 
 			instExecute(IR.JI.opcode, NULL, NULL);
 
-			/*
+			
 			// 결과 출력 (For Debugging)
 			printf("%s %d\n\n", getInstName(IR.JI.opcode, NULL, NULL), IR.JI.jumpAddr);
-			*/
+			
 			break;
 		default:
 			break;
@@ -517,6 +531,7 @@ void startGoTask() {
 	}
 }
 
+//인터페이스 'r'실행시 반환되는 함수
 void showRegister() {
 	// 16진수로 출력
 	printf("[REGISTER]\n");
@@ -526,6 +541,7 @@ void showRegister() {
 	printf("PC=\t0x%x\n", PC);
 }
 
+//레지스터 초기화
 void initializeRegister() {
 	for (int i = 0; i < REG_SIZE; i++) {
 		// 32bit
@@ -537,20 +553,24 @@ void initializeRegister() {
 	R[29] = 0x80000000;
 }
 
+//원하는 레지스터 값을 변경할 수 있는 함수.
 void setRegister(unsigned int regNum, unsigned int val) {
 
 	R[regNum] = val;
 }
 
+//원하는 값으로 해당 메모리에 접근하여 값을 변경하는 함수.
 void setMemory(char* offset, char* val) {
 
 	R[atoi(offset)] = strtol(val, NULL, 16);
 }
 
+//현재 pc값을 원하는 값으로 변경하는 함수이다.
 void updatePC(unsigned int addr) {
 	PC = addr;
 }
 
+/*Instruction Fetch단계 =>loadInintTask() = 바이너리 파일을 load하고 메모리에 적재하는 작업을 담당하는 함수*/
 void loadInitTask() {
 	updatePC(0x400000);
 	setRegister(29, 0x80000000);
@@ -591,12 +611,13 @@ void loadInitTask() {
 		data = To_BigEndian(data);
 		// 데이터 메모리 적재
 		//printf("Data = %08x\n", data);
-		
+
 		MEM(dataAddr, data, 1, 2);
 		dataAddr = dataAddr + 4;
 	}
 }
-
+/*To_BigEndian = 데이터가 있을때 큰 단위가 앞으로 나오게 만드는 함수.
+이진수에서는 상위비트로 갈 수록 값이 커지기 때문에 앞쪽으로 갈 수록 단위가 커진다.*/
 unsigned int To_BigEndian(unsigned int x)
 {
 	unsigned int result = (x & 0xFF) << 24;
@@ -608,6 +629,9 @@ unsigned int To_BigEndian(unsigned int x)
 	return result;
 }
 
+/*Instruction Decode단계 => getOp() = instruction의 Op code, 즉 operation의 종류를 반환하는 함수
+0이면 R-type, 2또는3이면 J-type, 그 외는 I-type으로 처리함.
+instExecute() = op, function code에 따라 명령어를 분류하고 해당되는 연산을 실행하는 함수이다.*/
 unsigned char getOp(int opc) {
 	char format;
 	// R-Format instruction
@@ -625,6 +649,9 @@ unsigned char getOp(int opc) {
 	return format;
 }
 
+/*R-format + (I-format 또는 J-format)라는 2가지 format으로 나누었다.
+switch문을 사용해 case마다 명령어 처리했다.
+각 instruction은 MIPS simulator 강의자료 참고함*/
 void instExecute(int opc, int fct, int* isImmediate) {
 	if (opc != 0) {
 		// I-Format 또는 J-Format 인 경우
@@ -884,7 +911,12 @@ unsigned char* getInstName(int opc, int fct, int* isImmediate) {
 		}
 	}
 }
-
+/*ALU함수 부분이다.
+1. logicalOperation() = 비트 연산자 수행하는 함수
+2. addSubtract() = 덧셈,뺄셈 수행하는 함수이다.
+3. shiftOperation() = 쉬프트 연산 함수이다.
+4. checkZero() = 0인지 확인하는 함수이다.
+5. checkSetLess() = x보다 작은지 판별하는 함수이다.*/
 int logicOperation(int X, int Y, int C) {
 	if (C < 0 || C > 3) {
 		printf("error in logic operation\n");
@@ -979,7 +1011,7 @@ int checkSetLess(int X, int Y) {
 	return ret;
 }
 
-int ALU(int X, int Y, int C, int *Z) {
+int ALU(int X, int Y, int C, int* Z) {
 	int c32, c10;
 	int ret;
 
