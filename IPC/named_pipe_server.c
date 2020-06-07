@@ -5,35 +5,43 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
-
-#define FIFO_FILE "MYFIFO"
 #define SIZE 128
+
 int main()
 {
-  FILE *fp;
-  char a[40];
-  char readbuf[SIZE];
+  int fp,n;
+  char buffer[SIZE];
+
 start:
-  if ((fp = fopen(FIFO_FILE, "r+")) == NULL)
+  if ((fp = open("MYFIFO", O_RDWR)) == -1)
+  {
+    perror("open error");
+    exit(1);
+  }
+
+  if ((fp = open("MYFIFO", O_RDWR)) == -1)
   {
     perror("fopen");
     exit(1);
   }
+
   printf("Me : ");
   gets(a);
-  if (a[strlen(a) - 1] == '.')
-  {
-    fputs(a, fp);
-    fclose(fp);
-    return 0;
+
+  n = write(pd, buffer, strlen(buffer) + 1);
+  sleep(10);
+
+  if (!strcmp(buffer, "quit")){
+    exit(0);
   }
-  fputs(a, fp);
-  fclose(fp);
+
+  puts(a, fp);
+  close(fp);
   sleep(1);
-  fp = fopen(FIFO_FILE, "r");
-  fgets(readbuf, SIZE, fp);
+  fp = open("MYFIFO", O_RDWR);
+  gets(readbuf, SIZE, fp);
   printf("Him :%s\n", readbuf);
-  fclose(fp);
+  close(fp);
   sleep(1);
   goto start;
   return 0;
