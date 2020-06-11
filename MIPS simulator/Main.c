@@ -344,7 +344,7 @@ simulator명령은 I/j/g/s/m/r/x/sr/sm으로 구성된다.*/
 
 // 바이너리 파일 여는 함수
 void openBinaryFile(char* filePath) {
-	err = fopen_s(&pFile, "as_ex01_arith.bin", "rb");
+	//err = fopen_s(&pFile, "as_ex01_arith.bin", "rb");
 	//err = fopen_s(&pFile, "as_ex02_logic.bin", "rb");
 	//err = fopen_s(&pFile, "as_ex03_ifelse.bin", "rb");
 
@@ -371,7 +371,7 @@ void openBinaryFile(char* filePath) {
 
 //인터페이스 's'실행시 반환되는 함수
 void startStepTask() {
-	//printf("current value : %x\n", MEM(PC, NULL, 0, 2));
+	printf("current value : %x\n", MEM(PC, NULL, 0, 2));
 	unsigned instBinary = MEM(PC, NULL, 0, 2);
 	PC = PC + 4;
 	/* Instruction Decode */
@@ -450,7 +450,7 @@ void startGoTask() {
 
 	while (continueTask) {
 		/* Instruction Fetch */
-		//printf("current value : %x\n", MEM(PC, NULL, 0, 2));
+		printf("current value : %x\n", MEM(PC, NULL, 0, 2));
 		unsigned instBinary = MEM(PC, NULL, 0, 2);
 		PC = PC + 4;
 		/* Instruction Decode */
@@ -588,8 +588,8 @@ void loadInitTask() {
 	fread(&numData, sizeof(data1), 1, pFile);
 	numData = To_BigEndian(numData);
 
-	//printf("size of Instructions : %d\n", numInst);
-	//printf("size of Datas : %d\n", numData);
+	printf("size of Instructions : %d\n", numInst);
+	printf("size of Datas : %d\n", numData);
 
 	unsigned int memAddr = 0x00400000;
 	unsigned int dataAddr = 0x10000000;
@@ -599,7 +599,7 @@ void loadInitTask() {
 			exit(1);
 		// 명령어 메모리 적재
 		data = To_BigEndian(data);
-		//printf("Instruction = %08x\n", data);
+		printf("Instruction = %08x\n", data);
 
 		MEM(memAddr, data, 1, 2);
 		memAddr = memAddr + 4;
@@ -610,7 +610,7 @@ void loadInitTask() {
 			exit(1);
 		data = To_BigEndian(data);
 		// 데이터 메모리 적재
-		//printf("Data = %08x\n", data);
+		printf("Data = %08x\n", data);
 
 		MEM(dataAddr, data, 1, 2);
 		dataAddr = dataAddr + 4;
